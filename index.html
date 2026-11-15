@@ -288,6 +288,10 @@ footer.pie .pie-logo{height:52px;width:auto}
 .suelto-qr{font-size:.88rem;margin-top:2px}
 .suelto-qr a{color:#fff;font-weight:700}
 @media (max-width:480px){.suelto-btn{align-self:stretch}}
+
+/* QR de pago */
+.qr-img{display:block;margin-top:14px;max-width:320px;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1.5px var(--linea)}
+.qr-img img{display:block;width:100%;height:auto}
 </style>
 </head>
 <body>
@@ -515,11 +519,12 @@ footer.pie .pie-logo{height:52px;width:auto}
       <div class="px"><span class="ahora" data-precio="lanz">49 Bs</span><span class="antes" data-precio="normal">69 Bs</span></div>
       <div id="pago-qr">
         <ol class="pasos">
-          <li>Escanea el QR desde la app de tu banco.</li>
-          <li>Envía el comprobante y tu correo en el formulario.</li>
-          <li>Recibes el manual en tu correo.</li>
+          <li>Escanea el QR desde la app de tu banco y paga 49 Bs.</li>
+          <li>Envía la foto del comprobante con tu nombre completo y tu correo <a href="https://wa.me/59177343575?text=Hola%2C%20ya%20pagu%C3%A9%20por%20QR%20las%20flashcards%20de%20Farmacolog%C3%ADa.%20Te%20env%C3%ADo%20el%20comprobante." target="_blank" rel="noopener">por WhatsApp</a>.</li>
+          <li>Verificamos el pago y te enviamos tu acceso.</li>
         </ol>
-        <div class="qr" style="margin-top:14px">QR de pago<br>(pendiente de añadir)</div>
+        <a class="qr-img" href="pago/infocitos_qr_pago.jpg" target="_blank" rel="noopener"><img src="pago/infocitos_qr_pago.jpg" width="1080" height="1350" alt="QR de pago de 49 Bs para las flashcards de Farmacología" loading="lazy"></a>
+        <p class="nota" style="margin-top:6px">Toca la imagen para ampliarla o guardarla.</p>
       </div>
       <div id="pago-tarjeta" hidden>
         <ol class="pasos">
