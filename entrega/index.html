@@ -94,7 +94,7 @@
 
   <!-- Paso 1: datos para el sello -->
   <form id="datos" class="tarjeta oculto" autocomplete="on">
-    <p>Tus PDF se generan <b>a tu nombre</b>. Escribe tus datos una sola vez: aparecerán en cada página junto con tu correo <b id="correo1"></b>.</p>
+    <p>Tus PDF se generan <b>a tu nombre</b>. Escribe tus datos una sola vez: aparecerán en cada página<span id="con-correo"> junto con tu correo <b id="correo1"></b></span>.</p>
     <label for="nombre">Nombre y apellido</label>
     <input id="nombre" name="name" type="text" autocomplete="name" maxlength="60" required>
     <label for="celular">Celular</label>
@@ -138,6 +138,11 @@
       <p class="sub" style="margin-top:12px">Cada PDF se prepara en el momento: tarda de unos segundos a un minuto. Puedes pedir varios a la vez.</p>
       <div id="lista"></div>
     </div>
+    <div id="extras-caja" class="tarjeta oculto">
+      <h3 style="font-size:16px;margin:0 0 10px">También incluido</h3>
+      <div id="extras" class="versiones"></div>
+      <p class="sub" style="margin-top:12px;font-size:14px">El mazo de Anki se abre con la app Anki (gratis en el ordenador y en Android con AnkiDroid; en iPhone es AnkiMobile). Se descarga desde Google Drive: si Drive avisa de que no puede analizar el archivo en busca de virus, toca «Descargar de todos modos».</p>
+    </div>
   </section>
 
   <!-- Sin enlace: reenviar -->
@@ -157,7 +162,7 @@
 
 <script>
 // Dirección del servicio de Apps Script (Implementar → Aplicación web → URL)
-const API = 'https://script.google.com/macros/s/AKfycbx4DMvrogK9QlX1CBalJiNLeYqXe5aFlivs7_GBv1sG-O5vdxQ7SoS5Fq2BnM-XXVxU/exec';
+const API = 'https://script.google.com/macros/s/AKfycby2PPSs37ga6rrByam-BzTv1ZWH9eC3xR7xuq1LzY0RJ32AYwyorNP7KwH12l3B44bHig/exec';
 
 const $ = (id) => document.getElementById(id);
 const mostrar = (id, si = true) => $(id).classList.toggle('oculto', !si);
@@ -180,6 +185,7 @@ async function iniciar() {
     if (!r.ok) return error('fallo', r.error);
     if (!r.nombre) {
       $('correo1').textContent = r.email;
+      mostrar('con-correo', !!r.email);
       mostrar('datos', true);
       $('datos').onsubmit = (e) => { e.preventDefault(); registrar(r); };
     } else {
@@ -221,7 +227,7 @@ async function registrar(info) {
     const r = await llamar({ action: 'registrar', t: token, nombre: $('nombre').value, celular });
     if (!r.ok) { boton.disabled = false; return error('fallo-datos', r.error); }
     mostrar('datos', false);
-    pintarArchivos(Object.assign(info, { nombre: r.nombre, celular: r.celular }));
+    pintarArchivos(Object.assign(info, { nombre: r.nombre, celular: r.celular, extras: r.extras || [] }));
   } catch (e) {
     boton.disabled = false;
     error('fallo-datos', e.message);
@@ -229,7 +235,19 @@ async function registrar(info) {
 }
 
 function pintarArchivos(r) {
-  $('sello-texto').textContent = `${r.nombre} · ${r.email} · ${r.celular} · Pedido ${r.pedido}`;
+  $('sello-texto').textContent = [r.nombre, r.email, r.celular, 'Pedido ' + r.pedido].filter(Boolean).join(' · ');
+  const extras = $('extras');
+  extras.innerHTML = '';
+  (r.extras || []).forEach((x) => {
+    const a = document.createElement('a');
+    a.className = 'boton secundario';
+    a.href = x.url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.textContent = '⬇ ' + x.titulo;
+    extras.append(a);
+  });
+  mostrar('extras-caja', (r.extras || []).length > 0);
   const grupos = {};
   r.archivos.forEach((a) => (grupos[a.bloque] = grupos[a.bloque] || []).push(a));
   const lista = $('lista');
